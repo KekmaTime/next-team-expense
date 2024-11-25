@@ -1,3 +1,5 @@
+"use client";
+
 import { ColumnDef } from "@tanstack/react-table";
 import { Expense } from "@/types/expense";
 import { Badge } from "@/components/ui/badge";
@@ -39,7 +41,7 @@ export const columns: ColumnDef<Expense>[] = [
         <Badge
           variant={
             status === "approved"
-              ? "success"
+              ? "secondary"
               : status === "rejected"
               ? "destructive"
               : "default"
