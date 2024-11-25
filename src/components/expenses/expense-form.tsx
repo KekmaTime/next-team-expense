@@ -17,6 +17,7 @@ import { Expense } from "@/types/expense"
 import { expenseFormSchema } from "@/types/expense"
 import { CategorySelect } from "@/components/expenses/category-select"
 import { DatePicker } from "@/components/expenses/date-picker"
+import { AmountInput } from "@/components/expenses/amount-input"
 
 interface ExpenseFormProps {
   onSubmit: (values: z.infer<typeof expenseFormSchema>) => void
@@ -62,11 +63,12 @@ export function ExpenseForm({ onSubmit, initialData }: ExpenseFormProps) {
             <FormItem>
               <FormLabel>Amount</FormLabel>
               <FormControl>
-                <Input 
-                  type="number" 
-                  step="0.01" 
-                  placeholder="0.00" 
-                  {...field} 
+                <AmountInput 
+                  value={field.value}
+                  onChange={field.onChange}
+                  onStatusChange={(status) => {
+                    form.setValue('status', status);
+                  }}
                 />
               </FormControl>
               <FormMessage />
