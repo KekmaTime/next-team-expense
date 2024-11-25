@@ -33,7 +33,11 @@ export function mapConvexToExpense(doc: ConvexExpense): Expense {
       lastModified: new Date(doc.metadata.lastModified),
       approver: doc.metadata.approver,
       rejectionReason: doc.metadata.rejectionReason,
-      attachments: doc.metadata.attachments
+      attachments: doc.metadata.attachments?.map(attachment => ({
+        id: attachment.id as Id<"_storage">,
+        name: attachment.name,
+        size: attachment.size
+      }))
     }
   };
 }

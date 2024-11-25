@@ -21,6 +21,7 @@ import { AmountInput } from "@/components/expenses/amount-input"
 import { useState } from "react"
 import { DynamicField as DynamicFieldComponent } from "@/components/expenses/dynamic-field"
 import { mockCategories } from "@/lib/mock-data"
+import { FileUpload } from "@/components/expenses/file-upload"
 
 interface ExpenseFormProps {
   onSubmit: (values: z.infer<typeof expenseFormSchema>) => void
@@ -133,6 +134,25 @@ export function ExpenseForm({ onSubmit, initialData }: ExpenseFormProps) {
                 <DatePicker 
                   date={field.value ? new Date(field.value) : undefined}
                   onSelect={(date) => field.onChange(date?.toISOString().split('T')[0])}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="metadata.attachments"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Attachments</FormLabel>
+              <FormControl>
+                <FileUpload
+                  value={field.value}
+                  onChange={(files) => {
+                    form.setValue('metadata.attachments', files);
+                  }}
                 />
               </FormControl>
               <FormMessage />

@@ -2,49 +2,50 @@ import { ExpenseCategory } from "@/types/expense";
 
 export const mockCategories: ExpenseCategory[] = [
   {
-    id: "food",
-    name: "Food & Dining",
+    name: "Travel",
     subcategories: [
       {
-        id: "meals",
-        name: "Meals",
-        subcategories: [
-          { 
-            id: "team-lunch", 
-            name: "Team Events",
-            dynamicFields: [
-              {
-                id: "attendees",
-                label: "Number of Attendees",
-                type: "number",
-                required: true,
-                value: ""
-              },
-              {
-                id: "event-type",
-                label: "Event Type",
-                type: "select",
-                required: true,
-                options: ["Team Lunch", "Team Dinner", "Celebration"],
-                value: ""
-              }
-            ]
+        name: "Airfare",
+        dynamicFields: [
+          {
+            id: "flight-number",
+            label: "Flight Number",
+            type: "text",
+            required: true,
+            value: ""
+          }
+        ]
+      },
+      {
+        name: "Hotel",
+        dynamicFields: [
+          {
+            id: "check-in",
+            label: "Check-in Date",
+            type: "date",
+            required: true,
+            value: ""
+          },
+          {
+            id: "check-out",
+            label: "Check-out Date",
+            type: "date",
+            required: true,
+            value: ""
           }
         ]
       }
     ]
   },
   {
-    id: "office",
-    name: "Office",
+    name: "Office Supplies",
     subcategories: [
-      { 
-        id: "supplies", 
-        name: "Supplies",
+      {
+        name: "Electronics",
         dynamicFields: [
           {
-            id: "department",
-            label: "Department",
+            id: "serial-number",
+            label: "Serial Number",
             type: "text",
             required: true,
             value: ""
