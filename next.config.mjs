@@ -7,6 +7,11 @@ const nextConfig = {
         hostname: 'media.giphy.com',
         pathname: '**',
       },
+      {
+        protocol: 'https',
+        hostname: '*.convex.cloud',
+        pathname: '**',
+      }
     ],
   },
 };
