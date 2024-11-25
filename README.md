@@ -9,7 +9,7 @@ A modern expense tracking application built with Next.js 14, focusing on team co
 #### Phase 1: Core Foundation (Current)
 - [x] Project setup with Next.js 14
 - [x] Basic UI components with shadcn/ui
-- [ ] Basic expense list view
+- [x] Basic expense list view
 - [ ] Simple expense form
 - [x] Basic TypeScript types implementation
 

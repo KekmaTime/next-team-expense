@@ -1,3 +1,5 @@
+import * as z from "zod"
+
 type ExpenseCategory = {
     id: string;
     name: string;
@@ -15,6 +17,32 @@ type ExpenseCategory = {
     percentage: number;
     note?: string;
   };
+  
+  export const expenseFormSchema = z.object({
+    description: z.string().min(2, {
+      message: "Description must be at least 2 characters.",
+    }),
+    amount: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
+      message: "Please enter a valid amount greater than 0",
+    }),
+    date: z.string(),
+    categoryPath: z.array(z.string()).default([]),
+    status: z.enum(['pending', 'approved', 'rejected']).default('pending'),
+    metadata: z.object({
+      lastModified: z.date(),
+      approver: z.string().optional(),
+      rejectionReason: z.string().optional(),
+      attachments: z.array(z.object({
+        id: z.string(),
+        name: z.string(),
+        size: z.number()
+      })).optional()
+    }).default({
+      lastModified: new Date()
+    })
+  })
+  
+  export type ExpenseFormData = z.infer<typeof expenseFormSchema>
   
   interface Expense {
     id: string;
