@@ -11,6 +11,8 @@ import {
 import { ExpenseForm } from "./expense-form"
 import { Expense } from "@/types/expense"
 import { ExpenseFormData } from "@/types/expense"
+import { useState } from "react"
+import { createExpense } from "@/app/actions"
 
 type FormData = ExpenseFormData
 
@@ -20,13 +22,20 @@ interface ExpenseDialogProps {
 }
 
 export function ExpenseDialog({ trigger, expense }: ExpenseDialogProps) {
+  const [open, setOpen] = useState(false)
+  
   const handleSubmit = async (data: FormData) => {
-    // Not Implemented
-    console.log(data)
+    try {
+      await createExpense(data)
+      setOpen(false)
+      // In a real app, we would update the table data here
+    } catch (error) {
+      console.error("Failed to submit expense:", error)
+    }
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger}
       </DialogTrigger>

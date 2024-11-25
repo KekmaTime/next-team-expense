@@ -22,9 +22,16 @@ type ExpenseCategory = {
     description: z.string().min(2, {
       message: "Description must be at least 2 characters.",
     }),
-    amount: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
-      message: "Please enter a valid amount greater than 0",
-    }),
+    amount: z.string()
+      .refine((val) => !isNaN(Number(val)), {
+        message: "Please enter a valid number",
+      })
+      .refine((val) => Number(val) >= 0, {
+        message: "Amount cannot be negative",
+      })
+      .refine((val) => Number(val) > 0, {
+        message: "Amount must be greater than 0",
+      }),
     date: z.string(),
     categoryPath: z.array(z.string()).default([]),
     status: z.enum(['pending', 'approved', 'rejected']).default('pending'),

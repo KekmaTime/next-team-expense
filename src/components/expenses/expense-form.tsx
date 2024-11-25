@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/form"
 import { Expense } from "@/types/expense"
 import { expenseFormSchema } from "@/types/expense"
+import { CategorySelect } from "@/components/expenses/category-select"
+import { DatePicker } from "@/components/expenses/date-picker"
 
 interface ExpenseFormProps {
   onSubmit: (values: z.infer<typeof expenseFormSchema>) => void
@@ -74,14 +76,31 @@ export function ExpenseForm({ onSubmit, initialData }: ExpenseFormProps) {
 
         <FormField
           control={form.control}
-          name="date"
+          name="categoryPath"
           render={({ field }) => (
             <FormItem>
+              <FormLabel>Category</FormLabel>
+              <FormControl>
+                <CategorySelect 
+                  value={field.value} 
+                  onChange={field.onChange}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="date"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
               <FormLabel>Date</FormLabel>
               <FormControl>
-                <Input 
-                  type="date"
-                  {...field}
+                <DatePicker 
+                  date={field.value ? new Date(field.value) : undefined}
+                  onSelect={(date) => field.onChange(date?.toISOString().split('T')[0])}
                 />
               </FormControl>
               <FormMessage />
