@@ -24,6 +24,8 @@ import { mockCategories } from "@/lib/mock-data"
 import { FileUpload } from "@/components/expenses/file-upload"
 import { ExpenseSplit } from "@/components/expenses/expense-split"
 import { getCategoryRules } from "@/lib/category-utils"
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 
 interface ExpenseFormProps {
   onSubmit: (values: z.infer<typeof expenseFormSchema>) => void
@@ -113,6 +115,14 @@ export function ExpenseForm({ onSubmit, initialData }: ExpenseFormProps) {
     onSubmit(data);
   };
 
+  const expenseDocs = useQuery(api.expenses.list) || [];
+  const recentExpenses = expenseDocs
+    .slice(0, 5)
+    .map(exp => ({
+      amount: exp.amount,
+      date: new Date(exp.date)
+    }));
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
@@ -143,6 +153,7 @@ export function ExpenseForm({ onSubmit, initialData }: ExpenseFormProps) {
                   onStatusChange={(status) => {
                     form.setValue('status', status);
                   }}
+                  recentExpenses={recentExpenses}
                 />
               </FormControl>
               <FormMessage />
