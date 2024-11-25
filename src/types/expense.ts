@@ -4,6 +4,7 @@ type ExpenseCategory = {
     id: string;
     name: string;
     subcategories?: ExpenseCategory[];
+    dynamicFields?: DynamicField[];
     rules?: {
       maxAmount?: number;
       requiresApproval?: boolean;
@@ -35,6 +36,14 @@ type ExpenseCategory = {
     date: z.string(),
     categoryPath: z.array(z.string()).default([]),
     status: z.enum(['pending', 'approved', 'rejected']).default('pending'),
+    dynamicFields: z.array(z.object({
+      id: z.string(),
+      label: z.string(),
+      type: z.enum(['text', 'number', 'date', 'select']),
+      required: z.boolean(),
+      options: z.array(z.string()).optional(),
+      value: z.string()
+    })).optional(),
     metadata: z.object({
       lastModified: z.date(),
       approver: z.string().optional(),
@@ -71,4 +80,13 @@ type ExpenseCategory = {
     };
   }
   
-  export type { ExpenseCategory, ExpenseSplit, Expense };
+  type DynamicField = {
+    id: string;
+    label: string;
+    type: 'text' | 'number' | 'date' | 'select';
+    required: boolean;
+    options?: string[];
+    value: string;
+  };
+  
+  export type { ExpenseCategory, ExpenseSplit, Expense, DynamicField };

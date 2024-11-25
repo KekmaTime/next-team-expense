@@ -31,6 +31,10 @@ export function ExpenseDialog({ trigger, expense }: ExpenseDialogProps) {
         categoryPath: data.categoryPath,
         date: new Date(data.date).toISOString(),
         status: data.status,
+        dynamicFields: (data.dynamicFields || []).map(field => ({
+          ...field,
+          type: field.type as "text" | "number" | "date" | "select"
+        })),
         metadata: {
           lastModified: new Date().toISOString(),
           approver: data.metadata.approver,

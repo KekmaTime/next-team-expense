@@ -8,6 +8,14 @@ export default defineSchema({
     categoryPath: v.array(v.string()),
     date: v.string(),
     status: v.union(v.literal("pending"), v.literal("approved"), v.literal("rejected")),
+    dynamicFields: v.array(v.object({
+      id: v.string(),
+      label: v.string(),
+      type: v.union(v.literal("text"), v.literal("number"), v.literal("date"), v.literal("select")),
+      required: v.boolean(),
+      options: v.optional(v.array(v.string())),
+      value: v.string()
+    })),
     metadata: v.object({
       lastModified: v.string(),
       approver: v.optional(v.string()),

@@ -14,14 +14,14 @@ A modern expense tracking application built with Next.js 14, focusing on team co
 - [x] Basic TypeScript types implementation
 
 #### Phase 2: Enhanced Features (Coming Soon)
-- [ ] Advanced expense form with dynamic fields
+- [x] Advanced expense form with dynamic fields
 - [x] Custom number input with formatting
 - [ ] File upload functionality
 - [ ] Category management system
 - [ ] Basic expense splitting
 
 #### Phase 3: Advanced Features
-- [ ] Real-time updates with Convex
+- [x] Real-time updates with Convex
 - [ ] Advanced splitting calculations
 - [x] Keyboard shortcuts
 - [ ] Mini-chart implementation

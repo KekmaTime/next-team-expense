@@ -13,11 +13,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { Expense } from "@/types/expense"
+import { DynamicField, Expense, ExpenseCategory } from "@/types/expense"
 import { expenseFormSchema } from "@/types/expense"
 import { CategorySelect } from "@/components/expenses/category-select"
 import { DatePicker } from "@/components/expenses/date-picker"
 import { AmountInput } from "@/components/expenses/amount-input"
+import { useState } from "react"
+import { DynamicField as DynamicFieldComponent } from "@/components/expenses/dynamic-field"
+import { mockCategories } from "@/lib/mock-data"
 
 interface ExpenseFormProps {
   onSubmit: (values: z.infer<typeof expenseFormSchema>) => void
@@ -25,6 +28,8 @@ interface ExpenseFormProps {
 }
 
 export function ExpenseForm({ onSubmit, initialData }: ExpenseFormProps) {
+  const [dynamicFields, setDynamicFields] = useState<DynamicField[]>([]);
+  
   const form = useForm<z.infer<typeof expenseFormSchema>>({
     resolver: zodResolver(expenseFormSchema),
     defaultValues: {
@@ -33,15 +38,40 @@ export function ExpenseForm({ onSubmit, initialData }: ExpenseFormProps) {
       date: initialData?.date?.toISOString().split('T')[0] || new Date().toISOString().split('T')[0],
       categoryPath: initialData?.categoryPath || [],
       status: initialData?.status || 'pending',
+      dynamicFields: [],
       metadata: initialData?.metadata || {
         lastModified: new Date()
       }
     },
-  })
+  });
+
+  const handleCategoryChange = (path: string[]) => {
+    form.setValue('categoryPath', path);
+    
+    // Find the selected category and its dynamic fields
+    let currentCategory: ExpenseCategory | undefined = mockCategories.find(
+      c => c.name === path[0]
+    );
+    
+    for (let i = 1; i < path.length && currentCategory; i++) {
+      currentCategory = currentCategory.subcategories?.find(
+        c => c.name === path[i]
+      );
+    }
+
+    // Update dynamic fields
+    const newDynamicFields = currentCategory?.dynamicFields || [];
+    setDynamicFields(newDynamicFields);
+    form.setValue('dynamicFields', newDynamicFields);
+  };
+
+  const handleSubmit = (data: z.infer<typeof expenseFormSchema>) => {
+    onSubmit(data);
+  };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="description"
@@ -85,7 +115,7 @@ export function ExpenseForm({ onSubmit, initialData }: ExpenseFormProps) {
               <FormControl>
                 <CategorySelect 
                   value={field.value} 
-                  onChange={field.onChange}
+                  onChange={handleCategoryChange}
                 />
               </FormControl>
               <FormMessage />
@@ -109,6 +139,26 @@ export function ExpenseForm({ onSubmit, initialData }: ExpenseFormProps) {
             </FormItem>
           )}
         />
+
+        {dynamicFields.map((field) => (
+          <FormField
+            key={field.id}
+            control={form.control}
+            name={`dynamicFields`}
+            render={() => (
+              <DynamicFieldComponent
+                {...field}
+                onChange={(value) => {
+                  const updatedFields = dynamicFields.map(f =>
+                    f.id === field.id ? { ...f, value } : f
+                  );
+                  setDynamicFields(updatedFields);
+                  form.setValue('dynamicFields', updatedFields);
+                }}
+              />
+            )}
+          />
+        ))}
 
         <Button type="submit" className="w-full">
           {initialData ? 'Update Expense' : 'Create Expense'}

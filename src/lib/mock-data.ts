@@ -1,4 +1,6 @@
-export const mockCategories = [
+import { ExpenseCategory } from "@/types/expense";
+
+export const mockCategories: ExpenseCategory[] = [
   {
     id: "food",
     name: "Food & Dining",
@@ -7,13 +9,28 @@ export const mockCategories = [
         id: "meals",
         name: "Meals",
         subcategories: [
-          { id: "team-lunch", name: "Team Events" },
-          { id: "client-dinner", name: "Client Meetings" }
+          { 
+            id: "team-lunch", 
+            name: "Team Events",
+            dynamicFields: [
+              {
+                id: "attendees",
+                label: "Number of Attendees",
+                type: "number",
+                required: true,
+                value: ""
+              },
+              {
+                id: "event-type",
+                label: "Event Type",
+                type: "select",
+                required: true,
+                options: ["Team Lunch", "Team Dinner", "Celebration"],
+                value: ""
+              }
+            ]
+          }
         ]
-      },
-      {
-        id: "snacks", 
-        name: "Snacks & Beverages"
       }
     ]
   },
@@ -21,8 +38,19 @@ export const mockCategories = [
     id: "office",
     name: "Office",
     subcategories: [
-      { id: "supplies", name: "Supplies" },
-      { id: "equipment", name: "Equipment" }
+      { 
+        id: "supplies", 
+        name: "Supplies",
+        dynamicFields: [
+          {
+            id: "department",
+            label: "Department",
+            type: "text",
+            required: true,
+            value: ""
+          }
+        ]
+      }
     ]
   }
 ];
