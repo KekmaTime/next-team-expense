@@ -26,22 +26,20 @@ export function FileUpload({ value = [], onChange }: FileUploadProps) {
     try {
       const uploadUrl = await generateUploadUrl();
       
-      const xhr = new XMLHttpRequest();
-      xhr.upload.onprogress = (event) => {
-        if (event.lengthComputable) {
-          const percentComplete = (event.loaded / event.total) * 100;
-          setProgress(percentComplete);
-        }
-      };
-
-      await new Promise((resolve, reject) => {
-        xhr.open('PUT', uploadUrl);
-        xhr.onload = resolve;
-        xhr.onerror = reject;
-        xhr.send(file);
+      const response = await fetch(uploadUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": file.type,
+        },
+        body: file,
       });
 
-      const { storageId } = await xhr.response.json();
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+
+      const { storageId } = await response.json();
+      
       const fileMetadata = await storeFileMetadata({
         storageId,
         name: file.name,

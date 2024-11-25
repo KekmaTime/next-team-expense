@@ -1,9 +1,10 @@
-import { FileIcon, DownloadIcon, XIcon } from "lucide-react";
+import { FileIcon, DownloadIcon, XIcon, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { formatFileSize } from "@/lib/utils";
 import { Id } from "../../../convex/_generated/dataModel";
+import { useState } from "react";
 
 interface FilePreviewProps {
   file: {
@@ -16,15 +17,23 @@ interface FilePreviewProps {
 
 export function FilePreview({ file, onRemove }: FilePreviewProps) {
   const generateDownloadUrl = useMutation(api.files.generateDownloadUrl);
+  const [downloading, setDownloading] = useState(false);
 
   const handleDownload = async () => {
     try {
+      setDownloading(true);
       const downloadUrl = await generateDownloadUrl({ storageId: file.id });
-      if (downloadUrl) {
-        window.open(downloadUrl, '_blank');
-      }
+      
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = file.name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     } catch (error) {
       console.error('Download failed:', error);
+    } finally {
+      setDownloading(false);
     }
   };
 
@@ -38,8 +47,17 @@ export function FilePreview({ file, onRemove }: FilePreviewProps) {
         </div>
       </div>
       <div className="flex gap-1">
-        <Button variant="ghost" size="sm" onClick={handleDownload}>
-          <DownloadIcon className="h-4 w-4" />
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={handleDownload}
+          disabled={downloading}
+        >
+          {downloading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <DownloadIcon className="h-4 w-4" />
+          )}
         </Button>
         {onRemove && (
           <Button variant="ghost" size="sm" onClick={onRemove}>
