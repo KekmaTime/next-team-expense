@@ -22,6 +22,8 @@ import { useState } from "react"
 import { DynamicField as DynamicFieldComponent } from "@/components/expenses/dynamic-field"
 import { mockCategories } from "@/lib/mock-data"
 import { FileUpload } from "@/components/expenses/file-upload"
+import { ExpenseSplit } from "@/components/expenses/expense-split"
+import { getCategoryRules } from "@/lib/category-utils"
 
 interface ExpenseFormProps {
   onSubmit: (values: z.infer<typeof expenseFormSchema>) => void
@@ -42,7 +44,8 @@ export function ExpenseForm({ onSubmit, initialData }: ExpenseFormProps) {
       dynamicFields: [],
       metadata: initialData?.metadata || {
         lastModified: new Date()
-      }
+      },
+      splits: initialData?.splits || [],
     },
   });
 
@@ -67,6 +70,46 @@ export function ExpenseForm({ onSubmit, initialData }: ExpenseFormProps) {
   };
 
   const handleSubmit = (data: z.infer<typeof expenseFormSchema>) => {
+    const rules = getCategoryRules(data.categoryPath);
+    const amount = parseFloat(data.amount);
+
+    if (rules) {
+      // Check maximum amount
+      if (rules.maxAmount && amount > rules.maxAmount) {
+        form.setError("amount", {
+          type: "manual",
+          message: `Amount exceeds maximum limit of ${rules.maxAmount}`
+        });
+        return;
+      }
+
+      // Check if approval required
+      if (rules.requiresApproval) {
+        data.status = "pending";
+      }
+
+      // Check allowed users (TODO: Replace with actual user ID from auth)
+      if (rules.allowedUsers && !rules.allowedUsers.includes("user-1")) {
+        form.setError("categoryPath", {
+          type: "manual",
+          message: "You are not authorized to use this category"
+        });
+        return;
+      }
+    }
+
+    // Validate splits if present
+    if (data.splits?.length) {
+      const totalSplit = data.splits.reduce((acc, split) => acc + split.amount, 0);
+      if (Math.abs(totalSplit - amount) > 0.01) { // Allow for small floating point differences
+        form.setError("splits", {
+          type: "manual",
+          message: "Split amounts must equal total amount"
+        });
+        return;
+      }
+    }
+
     onSubmit(data);
   };
 
@@ -153,6 +196,24 @@ export function ExpenseForm({ onSubmit, initialData }: ExpenseFormProps) {
                   onChange={(files) => {
                     form.setValue('metadata.attachments', files);
                   }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="splits"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Split Expense</FormLabel>
+              <FormControl>
+                <ExpenseSplit
+                  totalAmount={parseFloat(form.watch('amount') || '0')}
+                  value={field.value}
+                  onChange={field.onChange}
                 />
               </FormControl>
               <FormMessage />

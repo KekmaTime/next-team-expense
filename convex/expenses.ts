@@ -36,7 +36,12 @@ export const create = mutation({
         name: v.string(),
         size: v.number()
       })))
-    })
+    }),
+    splits: v.optional(v.array(v.object({
+      userId: v.string(),
+      amount: v.number(),
+      percentage: v.number()
+    })))
   },
   handler: async (ctx, args) => {
     return await ctx.db.insert("expenses", args);

@@ -25,6 +25,11 @@ export default defineSchema({
         name: v.string(),
         size: v.number()
       })))
-    })
+    }),
+    splits: v.optional(v.array(v.object({
+      userId: v.string(),
+      amount: v.number(),
+      percentage: v.number()
+    })))
   })
 });

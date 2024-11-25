@@ -19,8 +19,8 @@ A modern expense tracking application built with Next.js 14, focusing on team co
 - [x] Advanced expense form with dynamic fields
 - [x] Custom number input with formatting
 - [x] File upload functionality
-- [ ] Category management system
-- [ ] Basic expense splitting
+- [x] Category management system
+- [x] Basic expense splitting
 
 #### Phase 3: Advanced Features
 

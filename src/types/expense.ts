@@ -2,8 +2,14 @@ import { z } from "zod";
 import { Id } from "../../convex/_generated/dataModel";
 
 export type ExpenseCategory = {
+  id: string;
   name: string;
   subcategories?: ExpenseCategory[];
+  rules?: {
+    maxAmount?: number;
+    requiresApproval?: boolean;
+    allowedUsers?: string[];
+  };
   dynamicFields?: DynamicField[];
 };
 
@@ -45,7 +51,12 @@ export const expenseFormSchema = z.object({
       name: z.string(),
       size: z.number()
     })).optional()
-  })
+  }),
+  splits: z.array(z.object({
+    userId: z.string(),
+    amount: z.number(),
+    percentage: z.number()
+  })).optional()
 });
 
 export type ExpenseFormData = z.infer<typeof expenseFormSchema>;
