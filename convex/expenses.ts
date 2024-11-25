@@ -34,7 +34,8 @@ export const create = mutation({
       attachments: v.optional(v.array(v.object({
         id: v.string(),
         name: v.string(),
-        size: v.number()
+        size: v.number(),
+        url: v.string()
       })))
     }),
     splits: v.optional(v.array(v.object({
@@ -44,6 +45,15 @@ export const create = mutation({
     })))
   },
   handler: async (ctx, args) => {
-    return await ctx.db.insert("expenses", args);
+    return await ctx.db.insert("expenses", {
+      ...args,
+      metadata: {
+        ...args.metadata,
+        attachments: args.metadata.attachments?.map(attachment => ({
+          ...attachment,
+          url: `https://your-storage-url.com/${attachment.id}`
+        }))
+      }
+    });
   },
 });

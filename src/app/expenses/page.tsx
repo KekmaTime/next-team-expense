@@ -7,26 +7,63 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import { TableFilters } from "@/components/expenses/table-filters";
+import { useState } from "react";
 import { mapConvexToExpense } from "@/lib/helpers";
+import { Expense } from "@/types/expense";
+
+interface ExpenseFilters {
+  dateRange?: {
+    from: Date | undefined;
+    to: Date | undefined;
+  };
+  status?: 'all' | 'pending' | 'approved' | 'rejected';
+}
 
 export default function ExpensesPage() {
   const expenseDocs = useQuery(api.expenses.list) || [];
   const expenses = expenseDocs.map(mapConvexToExpense);
+  const [filteredExpenses, setFilteredExpenses] = useState<Expense[]>(expenses);
+
+  const handleFilterChange = (filters: ExpenseFilters) => {
+    let filtered = expenses;
+
+    if (filters.dateRange?.from || filters.dateRange?.to) {
+      filtered = filtered.filter(exp => {
+        return (
+          (!filters.dateRange?.from || exp.date >= filters.dateRange.from) &&
+          (!filters.dateRange?.to || exp.date <= filters.dateRange.to)
+        );
+      });
+    }
+
+    if (filters.status && filters.status !== 'all') {
+      filtered = filtered.filter(exp => exp.status === filters.status);
+    }
+
+    setFilteredExpenses(filtered);
+  };
 
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-4xl font-bold">Team Expenses</h1>
-        <ExpenseDialog 
-          trigger={
-            <Button>
-              <Plus className="w-4 h-4" />
-              Add Expense
-            </Button>
-          } 
-        />
+        <div className="flex gap-4">
+          <TableFilters onFilterChange={handleFilterChange} />
+          <ExpenseDialog 
+            trigger={
+              <Button>
+                <Plus className="w-4 h-4" />
+                Add Expense
+              </Button>
+            } 
+          />
+        </div>
       </div>
-      <DataTable columns={columns} data={expenses} />
+      <DataTable 
+        columns={columns} 
+        data={filteredExpenses} 
+      />
     </div>
   );
 }

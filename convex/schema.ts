@@ -7,15 +7,15 @@ export default defineSchema({
     amount: v.number(),
     categoryPath: v.array(v.string()),
     date: v.string(),
-    status: v.union(v.literal("pending"), v.literal("approved"), v.literal("rejected")),
-    dynamicFields: v.array(v.object({
+    status: v.string(),
+    dynamicFields: v.optional(v.array(v.object({
       id: v.string(),
       label: v.string(),
-      type: v.union(v.literal("text"), v.literal("number"), v.literal("date"), v.literal("select")),
+      type: v.string(),
       required: v.boolean(),
       options: v.optional(v.array(v.string())),
       value: v.string()
-    })),
+    }))),
     metadata: v.object({
       lastModified: v.string(),
       approver: v.optional(v.string()),
@@ -23,13 +23,38 @@ export default defineSchema({
       attachments: v.optional(v.array(v.object({
         id: v.string(),
         name: v.string(),
-        size: v.number()
+        size: v.number(),
+        url: v.string()
       })))
     }),
     splits: v.optional(v.array(v.object({
       userId: v.string(),
       amount: v.number(),
       percentage: v.number()
+    })))
+  }),
+  categories: defineTable({
+    name: v.string(),
+    rules: v.optional(v.object({
+      maxAmount: v.optional(v.number()),
+      requiresApproval: v.optional(v.boolean()),
+      allowedUsers: v.optional(v.array(v.string()))
+    })),
+    subcategories: v.optional(v.array(v.object({
+      id: v.string(),
+      name: v.string(),
+      rules: v.optional(v.object({
+        maxAmount: v.optional(v.number()),
+        requiresApproval: v.optional(v.boolean())
+      })),
+      dynamicFields: v.optional(v.array(v.object({
+        id: v.string(),
+        label: v.string(),
+        type: v.string(),
+        required: v.boolean(),
+        options: v.optional(v.array(v.string())),
+        value: v.string()
+      })))
     })))
   })
 });

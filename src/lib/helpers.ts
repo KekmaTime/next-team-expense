@@ -8,7 +8,20 @@ type ConvexExpense = {
   amount: number;
   categoryPath: string[];
   date: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: string;
+  dynamicFields?: {
+    id: string;
+    label: string;
+    type: string;
+    required: boolean;
+    options?: string[];
+    value: string;
+  }[];
+  splits?: {
+    userId: string;
+    amount: number;
+    percentage: number;
+  }[];
   metadata: {
     lastModified: string;
     approver?: string;
@@ -28,7 +41,8 @@ export function mapConvexToExpense(doc: ConvexExpense): Expense {
     amount: doc.amount,
     categoryPath: doc.categoryPath,
     date: new Date(doc.date),
-    status: doc.status,
+    status: doc.status as 'pending' | 'approved' | 'rejected',
+    splits: doc.splits,
     metadata: {
       lastModified: new Date(doc.metadata.lastModified),
       approver: doc.metadata.approver,

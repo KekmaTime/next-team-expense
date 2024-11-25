@@ -39,7 +39,10 @@ export function ExpenseDialog({ trigger, expense }: ExpenseDialogProps) {
           lastModified: new Date().toISOString(),
           approver: data.metadata.approver,
           rejectionReason: data.metadata.rejectionReason,
-          attachments: data.metadata.attachments
+          attachments: data.metadata.attachments?.map(attachment => ({
+            ...attachment,
+            url: `https://your-storage-url.com/${attachment.id}`
+          }))
         }
       })
       setOpen(false)

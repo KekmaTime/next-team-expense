@@ -27,8 +27,8 @@ A modern expense tracking application built with Next.js 14, focusing on team co
 - [x] Real-time updates with Convex
 - [ ] Advanced splitting calculations
 - [x] Keyboard shortcuts
-- [ ] Mini-chart implementation
-- [ ] Advanced filtering and sorting
+- [x] Mini-chart implementation
+- [x] Advanced filtering and sorting
 
 #### Phase 4: Polish & Optimization
 
