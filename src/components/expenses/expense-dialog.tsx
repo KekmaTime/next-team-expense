@@ -9,12 +9,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { ExpenseForm } from "./expense-form"
-import { Expense } from "@/types/expense"
-import { ExpenseFormData } from "@/types/expense"
+import { Expense, ExpenseFormData } from "@/types/expense"
 import { useState } from "react"
-import { createExpense } from "@/app/actions"
-
-type FormData = ExpenseFormData
+import { useMutation } from "convex/react"
+import { api } from "../../../convex/_generated/api"
 
 interface ExpenseDialogProps {
   trigger: React.ReactNode
@@ -23,12 +21,24 @@ interface ExpenseDialogProps {
 
 export function ExpenseDialog({ trigger, expense }: ExpenseDialogProps) {
   const [open, setOpen] = useState(false)
+  const createExpense = useMutation(api.expenses.create)
   
-  const handleSubmit = async (data: FormData) => {
+  const handleSubmit = async (data: ExpenseFormData) => {
     try {
-      await createExpense(data)
+      await createExpense({
+        description: data.description,
+        amount: parseFloat(data.amount),
+        categoryPath: data.categoryPath,
+        date: new Date(data.date).toISOString(),
+        status: data.status,
+        metadata: {
+          lastModified: new Date().toISOString(),
+          approver: data.metadata.approver,
+          rejectionReason: data.metadata.rejectionReason,
+          attachments: data.metadata.attachments
+        }
+      })
       setOpen(false)
-      // In a real app, we would update the table data here
     } catch (error) {
       console.error("Failed to submit expense:", error)
     }
