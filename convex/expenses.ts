@@ -57,3 +57,32 @@ export const create = mutation({
     });
   },
 });
+
+export const updateStatus = mutation({
+  args: {
+    id: v.id("expenses"),
+    status: v.union(v.literal("approved"), v.literal("rejected")),
+    metadata: v.object({
+      approver: v.string(),
+      rejectionReason: v.optional(v.string()),
+      lastModified: v.string()
+    })
+  },
+  handler: async (ctx, args) => {
+    const { id, status, metadata } = args;
+    
+    const expense = await ctx.db.get(id);
+    if (!expense) {
+      throw new Error("Expense not found");
+    }
+
+    return await ctx.db.patch(id, {
+      status,
+      metadata: {
+        ...expense.metadata,
+        ...metadata,
+        lastModified: new Date().toISOString()
+      }
+    });
+  },
+});

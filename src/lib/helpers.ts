@@ -36,7 +36,7 @@ type ConvexExpense = {
 
 export function mapConvexToExpense(doc: ConvexExpense): Expense {
   return {
-    id: doc._id.toString(),
+    id: doc._id,
     description: doc.description,
     amount: doc.amount,
     categoryPath: doc.categoryPath,

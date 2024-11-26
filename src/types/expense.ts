@@ -62,7 +62,7 @@ export const expenseFormSchema = z.object({
 export type ExpenseFormData = z.infer<typeof expenseFormSchema>;
 
 export interface Expense {
-  id: string;
+  id: Id<"expenses">;
   description: string;
   amount: number;
   categoryPath: string[];

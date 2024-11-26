@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatCurrency } from "@/lib/utils";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { StatusActions } from "@/components/expenses/status-actions";
 
 export const columns: ColumnDef<Expense>[] = [
   {
@@ -69,6 +70,20 @@ export const columns: ColumnDef<Expense>[] = [
         >
           {status.charAt(0).toUpperCase() + status.slice(1)}
         </Badge>
+      );
+    },
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const expense = row.original;
+      return (
+        <div className="flex justify-end">
+          <StatusActions
+            expenseId={expense.id}
+            currentStatus={expense.status}
+          />
+        </div>
       );
     },
   },
