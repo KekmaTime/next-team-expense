@@ -30,6 +30,7 @@ interface TableFiltersProps {
 
 export function TableFilters({ onFilterChange }: TableFiltersProps) {
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>()
+  const [selectedStatus, setSelectedStatus] = React.useState<'all' | 'pending' | 'approved' | 'rejected'>('all')
 
   const handleFilterChange = (
     type: 'dateRange' | 'status',
@@ -45,8 +46,10 @@ export function TableFilters({ onFilterChange }: TableFiltersProps) {
         } : undefined,
       });
     } else {
+      const status = value as 'all' | 'pending' | 'approved' | 'rejected';
+      setSelectedStatus(status);
       onFilterChange({
-        status: value as 'all' | 'pending' | 'approved' | 'rejected'
+        status
       });
     }
   }
@@ -77,6 +80,7 @@ export function TableFilters({ onFilterChange }: TableFiltersProps) {
           <div className="space-y-2">
             <h4 className="font-medium">Status</h4>
             <Select 
+              value={selectedStatus}
               onValueChange={(value: 'all' | 'pending' | 'approved' | 'rejected') => 
                 handleFilterChange('status', value)
               }

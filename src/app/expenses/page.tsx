@@ -10,7 +10,6 @@ import { api } from "../../../convex/_generated/api";
 import { TableFilters } from "@/components/expenses/table-filters";
 import { useState } from "react";
 import { mapConvexToExpense } from "@/lib/helpers";
-import { Expense } from "@/types/expense";
 
 interface ExpenseFilters {
   dateRange?: {
@@ -23,9 +22,11 @@ interface ExpenseFilters {
 export default function ExpensesPage() {
   const expenseDocs = useQuery(api.expenses.list) || [];
   const expenses = expenseDocs.map(mapConvexToExpense);
-  const [filteredExpenses, setFilteredExpenses] = useState<Expense[]>(expenses);
+  const [filters, setFilters] = useState<ExpenseFilters>({
+    status: 'all'
+  });
 
-  const handleFilterChange = (filters: ExpenseFilters) => {
+  const getFilteredExpenses = () => {
     let filtered = expenses;
 
     if (filters.dateRange?.from || filters.dateRange?.to) {
@@ -41,7 +42,14 @@ export default function ExpensesPage() {
       filtered = filtered.filter(exp => exp.status === filters.status);
     }
 
-    setFilteredExpenses(filtered);
+    return filtered;
+  };
+
+  const handleFilterChange = (newFilters: ExpenseFilters) => {
+    setFilters(prev => ({
+      ...prev,
+      ...newFilters
+    }));
   };
 
   return (
@@ -62,7 +70,7 @@ export default function ExpensesPage() {
       </div>
       <DataTable 
         columns={columns} 
-        data={filteredExpenses} 
+        data={getFilteredExpenses()} 
       />
     </div>
   );
